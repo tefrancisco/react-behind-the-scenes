@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo, useCallback, useMemo } from 'react';
 
 import IconButton from '../UI/IconButton.jsx';
 import MinusIcon from '../UI/Icons/MinusIcon.jsx';
@@ -27,19 +27,19 @@ function isPrime(number) {
   return true;
 }
 
-export default function Counter({ initialCount }) {
+const Counter = memo(function Counter({ initialCount }) {
   log('<Counter /> rendered', 1);
-  const initialCountIsPrime = isPrime(initialCount);
+  const initialCountIsPrime = useMemo(() => isPrime(initialCount), [initialCount]);
 
   const [counter, setCounter] = useState(initialCount);
 
-  function handleDecrement() {
+  const handleDecrement = useCallback(function handleDecrement() {
     setCounter((prevCounter) => prevCounter - 1);
-  }
+  }, [])
 
-  function handleIncrement() {
+  const handleIncrement = useCallback(function handleIncrement() {
     setCounter((prevCounter) => prevCounter + 1);
-  }
+  }, [])
 
   return (
     <section className="counter">
@@ -48,14 +48,18 @@ export default function Counter({ initialCount }) {
         <strong>is {initialCountIsPrime ? 'a' : 'not a'}</strong> prime number.
       </p>
       <p>
+        {/* Here, we pass a function to the IconButton component */}
         <IconButton icon={MinusIcon} onClick={handleDecrement}>
           Decrement
         </IconButton>
         <CounterOutput value={counter} />
+        {/* Here, we pass a function to the IconButton component */}
         <IconButton icon={PlusIcon} onClick={handleIncrement}>
           Increment
         </IconButton>
       </p>
     </section>
   );
-}
+})
+
+export default Counter;
